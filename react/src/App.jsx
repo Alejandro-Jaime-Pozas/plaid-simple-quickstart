@@ -56,6 +56,7 @@ function App(props) {
   }
   const { open, ready } = usePlaidLink(config);
 
+  // 
   useEffect(() => {
     if (token == null) {
       createLinkToken();
@@ -64,7 +65,7 @@ function App(props) {
       open();
     }
   }, [token, isOauth, ready, open]);
-  
+
   return (
     <div>
       <button onClick={() => open()
