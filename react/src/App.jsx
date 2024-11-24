@@ -54,9 +54,9 @@ function App(props) {
     config.receivedRedirectUri = window.location.href;
     isOauth = true;
   }
-  const { open, ready } = usePlaidLink(config);
+  const { open, ready } = usePlaidLink(config);  // why is this function never called anywhere else?
 
-  // 
+  // need to understand this below
   useEffect(() => {
     if (token == null) {
       createLinkToken();
@@ -73,6 +73,7 @@ function App(props) {
         <strong>Link account</strong>
       </button>
 
+      {/* if data has been retreived successfully, show data */}
       {!loading &&
         data != null &&
         Object.entries(data).map((entry, i) => (
