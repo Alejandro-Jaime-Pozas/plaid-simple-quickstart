@@ -37,7 +37,7 @@ const client = new PlaidApi(config);
 app.get("/api/create_link_token", async (req, res, next) => {
   const tokenResponse = await client.linkTokenCreate({
     user: { client_user_id: req.sessionID },
-    client_name: "Plaid's Tiny Quickstart",
+    client_name: "Subsy's Tiny Quickstart",
     language: "en",
     products: ["auth"],
     country_codes: ["US"],
