@@ -20,7 +20,7 @@ function App(props) {
   }, []);
 
   // Creates a Link token
-  const createLinkToken = React.useCallback(async () => {
+  const createLinkToken = useCallback(async () => {
     // For OAuth, use previously generated Link token
     if (window.location.href.includes("?oauth_state_id=")) {
       console.log('OAuth is included in the url, will proceed with OAuth process for creating link token.')
@@ -32,11 +32,12 @@ function App(props) {
       const data = await response.json();
       setToken(data.link_token);
       localStorage.setItem("link_token", data.link_token);
+      console.log(`Link token successfully fetched and created: ${data.link_token}`);
     }
   }, [setToken]);
 
   // Fetch balance data
-  const getBalance = React.useCallback(async () => {
+  const getBalance = useCallback(async () => {
     setLoading(true);
     const response = await fetch("/api/balance", {});
     const data = await response.json();
