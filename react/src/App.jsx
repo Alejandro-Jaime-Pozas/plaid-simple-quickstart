@@ -23,9 +23,11 @@ function App(props) {
   const createLinkToken = React.useCallback(async () => {
     // For OAuth, use previously generated Link token
     if (window.location.href.includes("?oauth_state_id=")) {
+      console.log('OAuth is included in the url, will proceed with OAuth process for creating link token.')
       const linkToken = localStorage.getItem('link_token');
       setToken(linkToken);
     } else {
+      console.log('Fetching link token from backend, which fetches from plaid.');
       const response = await fetch("/api/create_link_token", {});
       const data = await response.json();
       setToken(data.link_token);
@@ -59,6 +61,7 @@ function App(props) {
   // need to understand this below
   useEffect(() => {
     if (token == null) {
+      console.log('No token, will create one now.')
       createLinkToken();
     }
     if (isOauth && ready) {
