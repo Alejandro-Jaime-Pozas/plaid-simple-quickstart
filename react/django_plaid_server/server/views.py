@@ -1,4 +1,4 @@
-from django.shortcuts import render
+# from django.shortcuts import render
 
 # Create your views here.
 import os, json
@@ -9,7 +9,6 @@ from plaid.api import plaid_api
 from plaid.model.link_token_create_request import LinkTokenCreateRequest
 from plaid.model.item_public_token_exchange_request import ItemPublicTokenExchangeRequest
 from plaid.model.accounts_balance_get_request import AccountsBalanceGetRequest
-from plaid.model import (LinkTokenCreateRequest, ItemPublicTokenExchangeRequest, AccountsBalanceGetRequest)
 from plaid.configuration import Configuration
 from plaid.api_client import ApiClient
 from dotenv import load_dotenv
