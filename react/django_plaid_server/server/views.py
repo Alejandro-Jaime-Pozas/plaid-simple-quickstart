@@ -1,11 +1,14 @@
 from django.shortcuts import render
 
 # Create your views here.
-import os
+import os, json
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.middleware.csrf import get_token
 from plaid.api import plaid_api
+from plaid.model.link_token_create_request import LinkTokenCreateRequest
+from plaid.model.item_public_token_exchange_request import ItemPublicTokenExchangeRequest
+from plaid.model.accounts_balance_get_request import AccountsBalanceGetRequest
 from plaid.model import (LinkTokenCreateRequest, ItemPublicTokenExchangeRequest, AccountsBalanceGetRequest)
 from plaid.configuration import Configuration
 from plaid.api_client import ApiClient
