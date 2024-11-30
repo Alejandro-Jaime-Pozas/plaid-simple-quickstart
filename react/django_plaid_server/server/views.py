@@ -17,7 +17,7 @@ from plaid.model.country_code import CountryCode
 from dotenv import load_dotenv
 
 # Load environment variables
-load_dotenv()
+load_dotenv("../.env")
 
 PLAID_COUNTRY_CODES = os.getenv('PLAID_COUNTRY_CODES', 'US').split(',')
 PLAID_PRODUCTS = os.getenv('PLAID_PRODUCTS', 'auth').split(',')
