@@ -5,6 +5,7 @@ import os, json, time
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.middleware.csrf import get_token
+import plaid
 from plaid.api import plaid_api
 from plaid.model.products import Products
 from plaid.model.link_token_create_request import LinkTokenCreateRequest
@@ -19,18 +20,42 @@ from dotenv import load_dotenv
 # Load environment variables
 load_dotenv("../.env")
 
-PLAID_COUNTRY_CODES = os.getenv('PLAID_COUNTRY_CODES', 'US').split(',')
+PLAID_CLIENT_ID = os.getenv('PLAID_CLIENT_ID')
+PLAID_SECRET = os.getenv('PLAID_SECRET')
+PLAID_ENV = os.getenv('PLAID_ENV', 'sandbox')
 PLAID_PRODUCTS = os.getenv('PLAID_PRODUCTS', 'auth').split(',')
+PLAID_COUNTRY_CODES = os.getenv('PLAID_COUNTRY_CODES', 'US').split(',')
 
+def empty_to_none(field):
+    value = os.getenv(field)
+    if value is None or len(value) == 0:
+        return None
+    return value
 
-# Plaid client configuration
+host = plaid.Environment.Sandbox
+
+if PLAID_ENV == 'sandbox':
+    host = plaid.Environment.Sandbox
+
+if PLAID_ENV == 'production':
+    host = plaid.Environment.Production
+
+# Parameters used for the OAuth redirect Link flow.
+#
+# Set PLAID_REDIRECT_URI to 'http://localhost:3000/'
+# The OAuth redirect flow requires an endpoint on the developer's website
+# that the bank website should redirect to. You will need to configure
+# this redirect URI for your client ID through the Plaid developer dashboard
+# at https://dashboard.plaid.com/team/api.
+PLAID_REDIRECT_URI = empty_to_none('PLAID_REDIRECT_URI')
+
 configuration = Configuration(
-    host=os.getenv("PLAID_ENV"),
+    host=host,
     api_key={
-        "clientId": os.getenv("PLAID_CLIENT_ID"),
-        "secret": os.getenv("PLAID_SECRET"),
-        "Plaid-Version": "2020-09-14",
-    },
+        'clientId': PLAID_CLIENT_ID,
+        'secret': PLAID_SECRET,
+        'plaidVersion': '2020-09-14'
+    }
 )
 api_client = ApiClient(configuration)
 plaid_client = plaid_api.PlaidApi(api_client)
@@ -41,9 +66,9 @@ for product in PLAID_PRODUCTS:
 
 # Create Link Token
 def create_link_token(request):
-    print("PLAID_CLIENT_ID:", os.getenv("PLAID_CLIENT_ID"))
-    print("PLAID_SECRET:", os.getenv("PLAID_SECRET"))
-    print("PLAID_ENV:", os.getenv("PLAID_ENV"))
+    # print("PLAID_CLIENT_ID:", os.getenv("PLAID_CLIENT_ID"))
+    # print("PLAID_SECRET:", os.getenv("PLAID_SECRET"))
+    # print("PLAID_ENV:", os.getenv("PLAID_ENV"))
     try:
         link_token_request = LinkTokenCreateRequest(
             user=LinkTokenCreateRequestUser(
@@ -57,7 +82,8 @@ def create_link_token(request):
         )
         link_token_response = plaid_client.link_token_create(link_token_request)
         return JsonResponse(link_token_response.to_dict(), safe=False)
-    except Exception as e:
+    except plaid.ApiException as e:
+        print(e)
         return JsonResponse({"error": str(e)}, status=400)
 
 # Exchange Public Token for Access Token
