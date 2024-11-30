@@ -2,6 +2,9 @@
 server.js – Configures the Plaid client and uses Express to define routes that call Plaid endpoints in the Sandbox environment. Utilizes the official Plaid node.js client library to make calls to the Plaid API.
 */
 
+// INSERT THIS INTO package.JSON AFTER EXPERIMENTING WITH PYTHON:
+    // "start-server": "nodemon server.js",
+
 require("dotenv").config();
 const express = require("express");
 const bodyParser = require("body-parser");
