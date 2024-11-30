@@ -1,20 +1,27 @@
 # from django.shortcuts import render
 
 # Create your views here.
-import os, json
+import os, json, time
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.middleware.csrf import get_token
 from plaid.api import plaid_api
+from plaid.model.products import Products
 from plaid.model.link_token_create_request import LinkTokenCreateRequest
+from plaid.model.link_token_create_request_user import LinkTokenCreateRequestUser
 from plaid.model.item_public_token_exchange_request import ItemPublicTokenExchangeRequest
 from plaid.model.accounts_balance_get_request import AccountsBalanceGetRequest
 from plaid.configuration import Configuration
 from plaid.api_client import ApiClient
+from plaid.model.country_code import CountryCode
 from dotenv import load_dotenv
 
 # Load environment variables
 load_dotenv()
+
+PLAID_COUNTRY_CODES = os.getenv('PLAID_COUNTRY_CODES', 'US').split(',')
+PLAID_PRODUCTS = os.getenv('PLAID_PRODUCTS', 'auth').split(',')
+
 
 # Plaid client configuration
 configuration = Configuration(
@@ -28,15 +35,21 @@ configuration = Configuration(
 api_client = ApiClient(configuration)
 plaid_client = plaid_api.PlaidApi(api_client)
 
+products = []
+for product in PLAID_PRODUCTS:
+    products.append(Products(product))
+
 # Create Link Token
 def create_link_token(request):
     try:
         link_token_request = LinkTokenCreateRequest(
-            user={"client_user_id": request.session.session_key},
+            user=LinkTokenCreateRequestUser(
+                client_user_id=str(time.time())
+            ),
             client_name="Subsy's Tiny Quickstart",
             language="en",
-            products=["auth"],
-            country_codes=["US"],
+            products=products,
+            country_codes=list(map(lambda x: CountryCode(x), PLAID_COUNTRY_CODES)),
             redirect_uri=os.getenv("PLAID_SANDBOX_REDIRECT_URI"),
         )
         link_token_response = plaid_client.link_token_create(link_token_request)
