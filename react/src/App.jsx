@@ -9,7 +9,7 @@ function App(props) {
 
   const onSuccess = useCallback(async (publicToken) => {
     setLoading(true);
-    await fetch("/api/exchange_public_token", {
+    await fetch("/api/exchange_public_token/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -28,7 +28,7 @@ function App(props) {
       setToken(linkToken);
     } else {
       console.log('Fetching link token from backend, which fetches from plaid.');
-      const response = await fetch("/api/create_link_token", {});
+      const response = await fetch("/api/create_link_token/", {});
       const data = await response.json();
       setToken(data.link_token);
       localStorage.setItem("link_token", data.link_token);
@@ -39,7 +39,7 @@ function App(props) {
   // Fetch balance data
   const getBalance = useCallback(async () => {
     setLoading(true);
-    const response = await fetch("/api/balance", {});
+    const response = await fetch("/api/balance/", {});
     const data = await response.json();
     setData(data);
     setLoading(false);
