@@ -12,6 +12,7 @@ from plaid.model.link_token_create_request import LinkTokenCreateRequest
 from plaid.model.link_token_create_request_user import LinkTokenCreateRequestUser
 from plaid.model.item_public_token_exchange_request import ItemPublicTokenExchangeRequest
 from plaid.model.accounts_balance_get_request import AccountsBalanceGetRequest
+from plaid.model.transactions_sync_request import TransactionsSyncRequest
 from plaid.configuration import Configuration
 from plaid.api_client import ApiClient
 from plaid.model.country_code import CountryCode
@@ -40,6 +41,7 @@ if PLAID_ENV == 'sandbox':
 if PLAID_ENV == 'production':
     host = plaid.Environment.Production
 
+access_token = None
 # Parameters used for the OAuth redirect Link flow.
 #
 # Set PLAID_REDIRECT_URI to 'http://localhost:3000/'
@@ -91,6 +93,7 @@ def create_link_token(request):
 def exchange_public_token(request):
     if request.method == "POST":
         try:
+            global access_token
             data = json.loads(request.body)
             public_token = data.get("public_token")
 
@@ -98,9 +101,10 @@ def exchange_public_token(request):
             exchange_response = plaid_client.item_public_token_exchange(exchange_request)
 
             # Store the access_token in the session (for demo purposes)
-            request.session["access_token"] = exchange_response.to_dict()["access_token"]
+            access_token = exchange_response.to_dict()["access_token"]
+            # request.session["access_token"] = exchange_response.to_dict()["access_token"]
             return JsonResponse({"success": True})
-        except Exception as e:
+        except plaid.ApiException as e:
             return JsonResponse({"error": str(e)}, status=400)
     return JsonResponse({"error": "Invalid request method."}, status=405)
 
@@ -124,4 +128,44 @@ def csrf_token(request):
 
 # Get Transactions
 def get_transactions(request):
-    pass 
+    # Set cursor to empty to receive all historical updates
+    cursor = ''
+
+    # New transaction updates since "cursor"
+    added = []
+    modified = []
+    removed = [] # Removed transaction ids
+    has_more = True
+    try:
+        # Iterate through each page of new transaction updates for item
+        while has_more:
+            request = TransactionsSyncRequest(
+                access_token=access_token,
+                cursor=cursor,
+            )
+            response = client.transactions_sync(request).to_dict()
+            cursor = response['next_cursor']
+            # If no transactions are available yet, wait and poll the endpoint.
+            # Normally, we would listen for a webhook, but the Quickstart doesn't
+            # support webhooks. For a webhook example, see
+            # https://github.com/plaid/tutorial-resources or
+            # https://github.com/plaid/pattern
+            if cursor == '':
+                time.sleep(2)
+                continue
+            # If cursor is not an empty string, we got results,
+            # so add this page of results
+            added.extend(response['added'])
+            modified.extend(response['modified'])
+            removed.extend(response['removed'])
+            has_more = response['has_more']
+            pretty_print_response(response)
+
+        # Return the 8 most recent transactions
+        latest_transactions = sorted(added, key=lambda t: t['date'])[-8:]
+        return jsonify({
+            'latest_transactions': latest_transactions})
+
+    except plaid.ApiException as e:
+        error_response = format_error(e)
+        return jsonify(error_response)
