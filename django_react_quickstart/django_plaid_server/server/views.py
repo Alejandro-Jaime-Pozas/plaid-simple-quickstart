@@ -121,3 +121,7 @@ def get_balance(request):
 def csrf_token(request):
     token = get_token(request)
     return JsonResponse({"csrfToken": token})
+
+# Get Transactions
+def get_transactions(request):
+    pass 
