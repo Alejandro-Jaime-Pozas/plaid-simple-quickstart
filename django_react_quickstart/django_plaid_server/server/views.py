@@ -17,6 +17,7 @@ from plaid.configuration import Configuration
 from plaid.api_client import ApiClient
 from plaid.model.country_code import CountryCode
 from dotenv import load_dotenv
+from utils import validate_access_token
 
 # Load environment variables
 load_dotenv("../.env")
@@ -109,16 +110,17 @@ def exchange_public_token(request):
     return JsonResponse({"error": "Invalid request method."}, status=405)
 
 # Get Account Balances
+@validate_access_token
 def get_balance(request):
     try:
-        access_token = request.session.get("access_token")
-        if not access_token:
-            return JsonResponse({"error": "Access token not found."}, status=403)
+        # access_token = request.session.get("access_token")
+        # if not access_token:
+        #     return JsonResponse({"error": "Access token not found."}, status=403)
 
         balance_request = AccountsBalanceGetRequest(access_token=access_token)
         balance_response = plaid_client.accounts_balance_get(balance_request)
         return JsonResponse({"Balance": balance_response.to_dict()}, safe=False)
-    except Exception as e:
+    except plaid.ApiException as e:
         return JsonResponse({"error": str(e)}, status=400)
 
 # CSRF Token endpoint for front-end use
@@ -128,13 +130,15 @@ def csrf_token(request):
 
 # Get Transactions
 def get_transactions(request):
+    if not access_token:
+        return JsonResponse({"error": "Access token not found."}, status=403)
     # Set cursor to empty to receive all historical updates
     cursor = ''
 
     # New transaction updates since "cursor"
     added = []
     modified = []
-    removed = [] # Removed transaction ids
+    removed = []  # Removed transaction ids
     has_more = True
     try:
         # Iterate through each page of new transaction updates for item
@@ -143,7 +147,7 @@ def get_transactions(request):
                 access_token=access_token,
                 cursor=cursor,
             )
-            response = client.transactions_sync(request).to_dict()
+            response = plaid_client.transactions_sync(request).to_dict()
             cursor = response['next_cursor']
             # If no transactions are available yet, wait and poll the endpoint.
             # Normally, we would listen for a webhook, but the Quickstart doesn't
@@ -163,7 +167,7 @@ def get_transactions(request):
 
         # Return the 8 most recent transactions
         latest_transactions = sorted(added, key=lambda t: t['date'])[-8:]
-        return jsonify({
+        return JsonResponse({
             'latest_transactions': latest_transactions})
 
     except plaid.ApiException as e:
