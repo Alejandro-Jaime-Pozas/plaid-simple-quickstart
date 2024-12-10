@@ -129,9 +129,8 @@ def csrf_token(request):
     return JsonResponse({"csrfToken": token})
 
 # Get Transactions
-def get_transactions(request):
-    if not access_token:
-        return JsonResponse({"error": "Access token not found."}, status=403)
+@validate_access_token
+def get_transactions(request, *args, **kwargs):
     # Set cursor to empty to receive all historical updates
     cursor = ''
 
@@ -144,7 +143,7 @@ def get_transactions(request):
         # Iterate through each page of new transaction updates for item
         while has_more:
             request = TransactionsSyncRequest(
-                access_token=access_token,
+                access_token=kwargs.get("access_token"),
                 cursor=cursor,
             )
             response = plaid_client.transactions_sync(request).to_dict()
