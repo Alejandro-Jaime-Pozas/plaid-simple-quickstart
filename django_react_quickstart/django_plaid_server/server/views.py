@@ -42,7 +42,8 @@ if PLAID_ENV == 'sandbox':
 if PLAID_ENV == 'production':
     host = plaid.Environment.Production
 
-access_token = None
+# access_token = None
+
 # Parameters used for the OAuth redirect Link flow.
 #
 # Set PLAID_REDIRECT_URI to 'http://localhost:3000/'
@@ -102,8 +103,8 @@ def exchange_public_token(request):
             exchange_response = plaid_client.item_public_token_exchange(exchange_request)
 
             # Store the access_token in the session (for demo purposes)
-            access_token = exchange_response.to_dict()["access_token"]
-            # request.session["access_token"] = exchange_response.to_dict()["access_token"]
+            request.session["access_token"] = exchange_response.to_dict()["access_token"]
+            # access_token = exchange_response.to_dict()["access_token"]
             return JsonResponse({"success": True})
         except plaid.ApiException as e:
             return JsonResponse({"error": str(e)}, status=400)
@@ -111,13 +112,12 @@ def exchange_public_token(request):
 
 # Get Account Balances
 @validate_access_token
-def get_balance(request):
+def get_balance(request, *args, **kwargs):
     try:
         # access_token = request.session.get("access_token")
         # if not access_token:
         #     return JsonResponse({"error": "Access token not found."}, status=403)
-
-        balance_request = AccountsBalanceGetRequest(access_token=access_token)
+        balance_request = AccountsBalanceGetRequest(access_token=kwargs["access_token"])
         balance_response = plaid_client.accounts_balance_get(balance_request)
         return JsonResponse({"Balance": balance_response.to_dict()}, safe=False)
     except plaid.ApiException as e:
