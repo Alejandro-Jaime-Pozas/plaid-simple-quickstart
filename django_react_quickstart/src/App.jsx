@@ -5,6 +5,7 @@ import "./App.scss";
 function App(props) {
   const [token, setToken] = useState(null);
   const [data, setData] = useState(null);
+  const [latestTransactions, setLatestTransactions] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const onSuccess = useCallback(async (publicToken) => {
@@ -16,6 +17,7 @@ function App(props) {
       },
       body: JSON.stringify({ public_token: publicToken }),
     });
+    await getLatestTransactions();
     await getBalance();
   }, []);
 
@@ -48,8 +50,11 @@ function App(props) {
   // Fetch transaction data
   const getLatestTransactions = useCallback(async () => {
     setLoading(true);
-    const response = await fetch("/api/transactions/")
-  })
+    const response = await fetch("/api/get_latest_transactions/", {});
+    const data = await response.json();
+    setLatestTransactions(data);
+    setLoading(false);
+  }, [setLatestTransactions, setLoading]);
 
   let isOauth = false;
 
@@ -83,7 +88,16 @@ function App(props) {
         <strong>Link account</strong>
       </button>
 
-      {/* if data has been retreived successfully, show data */}
+      {/* if transaction data has been retreived successfully, show data */}
+      {!loading &&
+        latestTransactions != null &&
+        Object.entries(latestTransactions).map((entry, i) => (
+          <pre key={i}>
+            <code>{JSON.stringify(entry[1], null, 2)}</code>
+          </pre>
+        )
+      )}
+      {/* if balance data has been retreived successfully, show data */}
       {!loading &&
         data != null &&
         Object.entries(data).map((entry, i) => (
