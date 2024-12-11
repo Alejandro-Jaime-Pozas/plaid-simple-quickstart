@@ -45,6 +45,8 @@ function App(props) {
     setLoading(false);
   }, [setData, setLoading]);
 
+  // Fetch transaction data
+
   let isOauth = false;
 
   const config = {
