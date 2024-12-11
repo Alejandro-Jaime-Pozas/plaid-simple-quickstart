@@ -46,6 +46,10 @@ function App(props) {
   }, [setData, setLoading]);
 
   // Fetch transaction data
+  const getLatestTransactions = useCallback(async () => {
+    setLoading(true);
+    const response = await fetch("/api/transactions/")
+  })
 
   let isOauth = false;
 
