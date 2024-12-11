@@ -95,7 +95,6 @@ def create_link_token(request):
 def exchange_public_token(request):
     if request.method == "POST":
         try:
-            global access_token
             data = json.loads(request.body)
             public_token = data.get("public_token")
 
@@ -132,6 +131,10 @@ def csrf_token(request):
 @validate_access_token
 def get_transactions(request, *args, **kwargs):
     # Set cursor to empty to receive all historical updates
+    # Provide a cursor from your database if you've previously
+    # received one for the Item. Leave null if this is your
+    # first sync call for this Item. The first request will
+    # return a cursor.
     cursor = ''
 
     # New transaction updates since "cursor"
@@ -155,6 +158,7 @@ def get_transactions(request, *args, **kwargs):
             # https://github.com/plaid/pattern
             if cursor == '':
                 time.sleep(2)
+                print('Waiting for cursor to be available')
                 continue
             # If cursor is not an empty string, we got results,
             # so add this page of results
@@ -172,3 +176,6 @@ def get_transactions(request, *args, **kwargs):
     except plaid.ApiException as e:
         error_response = format_error(e)
         return jsonify(error_response)
+
+def pretty_print_response(response):
+  print(json.dumps(response, indent=2, sort_keys=True, default=str))
