@@ -54,6 +54,7 @@ function App(props) {
     const data = await response.json();
     setLatestTransactions(data);
     setLoading(false);
+    console.log(data);
   }, [setLatestTransactions, setLoading]);
 
   let isOauth = false;

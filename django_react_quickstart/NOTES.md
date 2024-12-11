@@ -1,3 +1,23 @@
+RELEVANT TRANSACTION DATA KEY/VALUE PAIRS
+- account_id
+- account_owner
+- amount
+- category
+- counterparties: could be redundant since most info here also mentioned in outer scope of data, but is a list/dict with data about the merchant like name, logo, website
+- date
+- iso_currency_code (check how this impacts if multi-currency acct)
+- logo_url
+- merchant_name: sometimes cleaner than 'name'
+- name: merchant name
+- payment_channel: online vs in-store could be useful
+- pending: true or false if payment pending
+- personal_finance_category: dict with confidence_level, detailed, and primary category info
+- personal_finance_category_icon_url: like entertainment, food, travel icons
+- website
+
+<!--  -->
+
+PLAID SERVER INITIAL TOKEN INTERACTION PROCESS
 1. frontend client requests a **link token** to backend python
 2. backend python requests a **link token** to plaid
 3. plaid sends **link token** to backend python
