@@ -52,9 +52,9 @@ function App(props) {
     setLoading(true);
     const response = await fetch("/api/get_latest_transactions/", {});
     const data = await response.json();
-    setLatestTransactions(data);
+    setLatestTransactions(data.latest_transactions);
     setLoading(false);
-    console.log(data);
+    console.log(data.latest_transactions);
   }, [setLatestTransactions, setLoading]);
 
   let isOauth = false;
@@ -98,9 +98,13 @@ function App(props) {
         (if there is some sort of description about the product purchase, ideal) */}
       {!loading &&
         latestTransactions != null &&
-        Object.entries(latestTransactions).map((entry, i) => (
-          <pre key={i}>
-            <div>{JSON.stringify(entry[1][0].name, null, 2)}</div>
+        latestTransactions.map((entry, i) => (
+          <pre className="row lead" key={i}>
+            <img className='img-fluid col-2 rounded ' src={entry.personal_finance_category_icon_url} alt="" />
+            <div className="div">{entry.name}</div>
+            <div className="div">{entry.merchant_name}</div>
+            <div className="div">{entry.amount}</div>
+            {/* <div>{JSON.stringify(entry[1], null, 2)}</div> */}
           </pre>
         )
       )}
