@@ -171,7 +171,8 @@ def get_transactions(request, *args, **kwargs):
         # Return the 8 most recent transactions
         latest_transactions = sorted(added, key=lambda t: t['date'])[-8:]
         return JsonResponse({
-            'latest_transactions': latest_transactions})
+            'latest_transactions': added[:15]})  # CHANGE BACK!
+            # 'latest_transactions': latest_transactions})  # CHANGE BACK!
 
     except plaid.ApiException as e:
         error_response = format_error(e)  # can format other errors this same way later
