@@ -170,7 +170,6 @@ def get_transactions(request, *args, **kwargs):
 
         # Return the 8 most recent transactions
         latest_transactions = sorted(added, key=lambda t: t['date'])[-8:]
-        print(latest_transactions)
         return JsonResponse({
             'latest_transactions': latest_transactions})
 
