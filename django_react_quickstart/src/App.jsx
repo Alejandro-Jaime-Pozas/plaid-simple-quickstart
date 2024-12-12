@@ -90,23 +90,29 @@ function App(props) {
       </button>
 
       {/* if transaction data has been retreived successfully, show data */}
+      {/* try displaying the transactions as I want them.
+        merchant logo
+        merchant name
+        amount
+        date
+        (if there is some sort of description about the product purchase, ideal) */}
       {!loading &&
         latestTransactions != null &&
         Object.entries(latestTransactions).map((entry, i) => (
           <pre key={i}>
-            <code>{JSON.stringify(entry[1], null, 2)}</code>
+            <div>{JSON.stringify(entry[1][0].name, null, 2)}</div>
           </pre>
         )
       )}
       {/* if balance data has been retreived successfully, show data */}
-      {!loading &&
+      {/* {!loading &&
         data != null &&
         Object.entries(data).map((entry, i) => (
           <pre key={i}>
             <code>{JSON.stringify(entry[1], null, 2)}</code>
           </pre>
         )
-      )}
+      )} */}
     </div>
   );
 }
