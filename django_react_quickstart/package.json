@@ -15,7 +15,7 @@
   },
   "scripts": {
     "start": "run-p start-client start-server",
-    "start-client": "react-scripts start",
+    "start-client": "react-scripts start PORT=3100",
     "start-server": "cd django_plaid_server && py manage.py runserver 5000",
     "build": "react-scripts build",
     "test": "react-scripts test",
