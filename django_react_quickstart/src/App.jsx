@@ -125,14 +125,14 @@ function App(props) {
         )
       )}
       {/* if balance data has been retreived successfully, show data */}
-      {/* {!loading &&
+      {!loading &&
         data != null &&
         Object.entries(data).map((entry, i) => (
           <pre key={i}>
             <code>{JSON.stringify(entry[1], null, 2)}</code>
           </pre>
         )
-      )} */}
+      )}
     </div>
   );
 }

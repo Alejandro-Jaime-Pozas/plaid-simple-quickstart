@@ -1,3 +1,9 @@
+PLAID API REFERENCE
+/accounts/balance/get https://plaid.com/docs/api/products/balance/#accountsbalanceget
+- returns ITEM/LINKED BANK and a list of all ACCOUNTS
+- this endpoint COULD POTENTIALLY HAVE LATENCY, as plaid backend can take 10-30 secs to resolve request, check for that.
+- this endpoint better than /accounts/get since fetches latest, not cached, request for all item accounts.
+
 RELEVANT TRANSACTION DATA KEY/VALUE PAIRS
 - account_id: bank acct used
 - account_owner
