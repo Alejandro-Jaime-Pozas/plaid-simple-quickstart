@@ -4,9 +4,9 @@ import "./App.scss";
 
 function App(props) {
   const [token, setToken] = useState(null);
-  const [data, setData] = useState(null);
-  const [latestTransactions, setLatestTransactions] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState(JSON.parse(localStorage.getItem("balance")) || null);
+  const [latestTransactions, setLatestTransactions] = useState(JSON.parse(localStorage.getItem("latest_transactions")) || null);
+  const [loading, setLoading] = useState(false);
 
   const onSuccess = useCallback(async (publicToken) => {
     setLoading(true);
@@ -44,7 +44,9 @@ function App(props) {
     const response = await fetch("/api/balance/", {});
     const data = await response.json();
     setData(data);
+    localStorage.setItem("balance", JSON.stringify(data));
     setLoading(false);
+    console.log(data)
   }, [setData, setLoading]);
 
   // Fetch transaction data
@@ -53,6 +55,7 @@ function App(props) {
     const response = await fetch("/api/get_latest_transactions/", {});
     const data = await response.json();
     setLatestTransactions(data.latest_transactions);
+    localStorage.setItem("latest_transactions", JSON.stringify(data.latest_transactions));
     setLoading(false);
     console.log(data.latest_transactions);
   }, [setLatestTransactions, setLoading]);
@@ -99,13 +102,18 @@ function App(props) {
       {!loading &&
         latestTransactions != null &&
         latestTransactions.map((entry, i) => (
-          <pre className="row lead" key={i}>
-            <img className='img-fluid col-2 rounded ' src={entry.personal_finance_category_icon_url} alt="" />
-            <div className="div">{entry.name}</div>
-            <div className="div">{entry.merchant_name}</div>
-            <div className="div">{entry.amount}</div>
-            {/* <div>{JSON.stringify(entry[1], null, 2)}</div> */}
-          </pre>
+          <div className="transactions row " key={i}>
+            {entry.logo_url ?
+              <img className='img-fluid col-1 rounded-circle ' src={entry.logo_url} alt="" />
+            :
+              <img className='img-fluid col-1 rounded-circle ' src={entry.personal_finance_category_icon_url} alt="" />
+            }
+            <div className="div col-1">{entry.name}</div>
+            <div className="div col-1">{entry.merchant_name}</div>
+            <div className="div col-1">{entry.amount}</div>
+            <div className="div col-2">{entry.date}</div>
+            <div className="div col-3 ">{entry.personal_finance_category.detailed}</div>
+          </div>
         )
       )}
       {/* if balance data has been retreived successfully, show data */}
