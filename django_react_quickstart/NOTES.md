@@ -1,18 +1,18 @@
 RELEVANT TRANSACTION DATA KEY/VALUE PAIRS
-- account_id
+- account_id: bank acct used
 - account_owner
-- amount
-- category
+- **amount**
+- category: similar but not as good as personal_finance_category
 - counterparties: could be redundant since most info here also mentioned in outer scope of data, but is a list/dict with data about the merchant like name, logo, website
-- date
+- **date**
 - iso_currency_code (check how this impacts if multi-currency acct)
-- logo_url
-- merchant_name: sometimes cleaner than 'name'
-- name: merchant name
+- **logo_url**
+- **merchant_name**: sometimes cleaner than 'name'
+- **name**: merchant name
 - payment_channel: online vs in-store could be useful
 - pending: true or false if payment pending
-- personal_finance_category: dict with confidence_level, detailed, and primary category info
-- personal_finance_category_icon_url: like entertainment, food, travel icons
+- **personal_finance_category**: dict with confidence_level, detailed, and primary category info
+- **personal_finance_category_icon_url**: like entertainment, food, travel icons
 - website
 
 <!--  -->

@@ -85,6 +85,14 @@ function App(props) {
     }
   }, [token, isOauth, ready, open]);
 
+  // Function to transform uppercase snake_case to Title Case with spaces
+  function toTitleCase(str) {
+    return str
+      .split('_')                          // Split by underscores
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()) // Capitalize first letter of each word
+      .join(' ');                           // Join words with a space
+  }
+
   return (
     <div>
       <button onClick={() => open()
@@ -102,17 +110,17 @@ function App(props) {
       {!loading &&
         latestTransactions != null &&
         latestTransactions.map((entry, i) => (
-          <div className="transactions row " key={i}>
+          <div className="transactions-plaid row " key={i}>
             {entry.logo_url ?
-              <img className='img-fluid col-1 rounded-circle ' src={entry.logo_url} alt="" />
+              <img className='tr-image img-fluid col-1 rounded-circle ' src={entry.logo_url} alt="" />
             :
-              <img className='img-fluid col-1 rounded-circle ' src={entry.personal_finance_category_icon_url} alt="" />
+              <img className='tr-image img-fluid col-1 rounded-circle ' src={entry.personal_finance_category_icon_url} alt="" />
             }
-            <div className="div col-1">{entry.name}</div>
-            <div className="div col-1">{entry.merchant_name}</div>
-            <div className="div col-1">{entry.amount}</div>
-            <div className="div col-2">{entry.date}</div>
-            <div className="div col-3 ">{entry.personal_finance_category.detailed}</div>
+            {/* <div className="tr-data div col">{entry.name}</div> */}
+            <div className="tr-data div col">{entry.merchant_name}</div>
+            <div className="tr-data div col-1">{entry.amount}</div>
+            <div className="tr-data div col">{entry.date}</div>
+            <div className="tr-data div col-5 ">{toTitleCase(entry.personal_finance_category.detailed)}</div>
           </div>
         )
       )}
