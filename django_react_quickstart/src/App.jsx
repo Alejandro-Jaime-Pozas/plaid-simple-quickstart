@@ -103,10 +103,10 @@ function App(props) {
 
       {/* if transaction data has been retreived successfully, show data */}
       {/* try displaying the transactions as I want them.
-        merchant logo
-        merchant name
-        amount
-        date
+          merchant logo
+          merchant name
+          amount
+          date
         (if there is some sort of description about the product purchase, ideal) */}
       {!loading &&
         latestTransactions != null &&
