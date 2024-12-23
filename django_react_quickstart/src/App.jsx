@@ -4,6 +4,7 @@ import "./App.scss";
 
 function App(props) {
   const [token, setToken] = useState(null);
+  // set the balance and transaction data to the data retreived from local storage, if it exists
   const [data, setData] = useState(JSON.parse(localStorage.getItem("balance")) || null);
   const [latestTransactions, setLatestTransactions] = useState(JSON.parse(localStorage.getItem("latest_transactions")) || null);
   const [loading, setLoading] = useState(false);
